@@ -106,7 +106,7 @@ export function AssistancePage() {
       {activeTab === 'new' ? (
         <>
           {successMsg && (
-            <div className="mb-6 p-4 rounded-lg bg-[#00B37E]/20 border border-[#00B37E]/50 text-brand-light flex items-center gap-3">
+            <div className="mb-6 p-4 rounded-lg bg-brand-blue/20 border border-brand-blue/50 text-brand-light flex items-center gap-3">
               <CheckCircle2 className="text-brand-blue flex-shrink-0" />
               <div>
                 <p className="font-medium text-white">{successMsg}</p>

@@ -8,11 +8,11 @@ export default {
     extend: {
       colors: {
         brand: {
-          dark: '#121214',
-          gray: '#202024',
-          light: '#E1E1E6',
-          blue: '#00B37E', // verde esmeralda tech
-          accent: '#8257E5' // purple tech/azul
+          dark: '#000000',
+          gray: '#111111',
+          light: '#F8FAFC',
+          blue: '#2563EB', // blue
+          accent: '#3B82F6' // lighter blue
         }
       },
       fontFamily: {
