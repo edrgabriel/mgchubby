@@ -24,9 +24,11 @@ export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => 
           <p className="text-black"><strong>WhatsApp:</strong> {orderData.whatsapp}</p>
         </div>
         <div>
-          <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1 text-black">Aparelho</h3>
+          <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1 text-black">Aparelho & Prazos</h3>
           <p className="text-black"><strong>Marca/Modelo:</strong> {orderData.brand} / {orderData.model}</p>
           <p className="text-black"><strong>IMEI/Senha:</strong> {orderData.imeiPassword || 'Não informado'}</p>
+          <p className="text-black"><strong>Entrada:</strong> {orderData.entryDate ? new Date(orderData.entryDate).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR')}</p>
+          <p className="text-black"><strong>Entrega Prevista:</strong> {orderData.deliveryDate ? new Date(orderData.deliveryDate).toLocaleDateString('pt-BR') : 'Não informada'}</p>
         </div>
       </div>
 
