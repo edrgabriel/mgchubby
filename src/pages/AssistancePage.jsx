@@ -13,7 +13,7 @@ export function AssistancePage() {
   const [currentOrderId, setCurrentOrderId] = useState("");
   const [ordersHistory, setOrdersHistory] = useState([]);
   
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     customerName: '',
     whatsapp: '',
     brand: '',
@@ -25,16 +25,19 @@ export function AssistancePage() {
     discount: 0,
     entryDate: new Date().toISOString().split('T')[0],
     deliveryDate: ''
-  });
+  };
 
-  const [checklist, setChecklist] = useState({
+  const initialChecklistState = {
     touchscreen: false,
     bateria: false,
     conectorCarga: false,
     microfoneAudio: false,
     cameras: false,
     wifiRede: false
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
+  const [checklist, setChecklist] = useState(initialChecklistState);
 
   const receiptRef = useRef();
 
@@ -51,6 +54,35 @@ export function AssistancePage() {
 
   const toggleChecklist = (item) => {
     setChecklist(prev => ({ ...prev, [item]: !prev[item] }));
+  };
+
+  const handleOpenOrder = (order) => {
+    setFormData({
+      customerName: order.customerName || '',
+      whatsapp: order.whatsapp || '',
+      brand: order.brand || '',
+      model: order.model || '',
+      imeiPassword: order.imeiPassword || '',
+      problem: order.problem || '',
+      partsCost: order.partsCost || 0,
+      laborCost: order.laborCost || 0,
+      discount: order.discount || 0,
+      entryDate: order.entryDate || '',
+      deliveryDate: order.deliveryDate || '',
+      orderId: order.orderId
+    });
+    setChecklist(order.checklist || initialChecklistState);
+    setCurrentOrderId(order.orderId);
+    setSuccessMsg("");
+    setActiveTab('new');
+  };
+
+  const handleNewOrder = () => {
+    setFormData(initialFormState);
+    setChecklist(initialChecklistState);
+    setCurrentOrderId("");
+    setSuccessMsg("");
+    setActiveTab('new');
   };
 
   const total = Number(formData.partsCost) + Number(formData.laborCost) - Number(formData.discount);
@@ -79,11 +111,11 @@ export function AssistancePage() {
     <div className="pb-24 sm:pb-8 relative">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h2 className="text-2xl font-bold text-white">
-          {activeTab === 'new' ? 'Nova Ordem de Serviço' : 'Histórico de OS'}
+          {activeTab === 'new' ? (currentOrderId ? `Ordem de Serviço: ${currentOrderId}` : 'Nova Ordem de Serviço') : 'Histórico de OS'}
         </h2>
         <div className="flex bg-brand-gray rounded-lg p-1 border border-white/5">
           <button
-            onClick={() => setActiveTab('new')}
+            onClick={handleNewOrder}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
               activeTab === 'new' ? "bg-brand-blue text-white" : "text-brand-light/60 hover:text-white"
@@ -215,6 +247,18 @@ export function AssistancePage() {
               >
                 <Printer className="mr-2" size={20} /> Imprimir Recibo
               </Button>
+              
+              {currentOrderId && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  onClick={handleNewOrder}
+                  className="sm:w-auto w-full border-white/10 text-white/70 hover:bg-white/5"
+                >
+                  <Plus className="mr-2" size={20} /> Criar Nova
+                </Button>
+              )}
             </div>
           </form>
 
@@ -247,9 +291,18 @@ export function AssistancePage() {
                 </div>
                 <div className="flex flex-col items-start md:items-end justify-center">
                   <span className="text-sm text-brand-light/60 mb-1">Total Estimado</span>
-                  <span className="text-xl font-bold text-white">
+                  <span className="text-xl font-bold text-white mb-3">
                     R$ {(Number(order.partsCost) + Number(order.laborCost) - Number(order.discount)).toFixed(2)}
                   </span>
+                  <Button 
+                    type="button" 
+                    size="sm" 
+                    variant="outline"
+                    className="border-brand-blue/30 text-brand-blue hover:bg-brand-blue/10"
+                    onClick={() => handleOpenOrder(order)}
+                  >
+                    Abrir OS
+                  </Button>
                 </div>
               </div>
             ))
