@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getShopSettings } from '../services/settingsService';
+import { formatDateBR } from '../utils/dateUtils';
 
 export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => {
   const [shopSettings, setShopSettings] = useState({ pixKey: '', pixQrCode: '' });
@@ -30,7 +31,7 @@ export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => 
         <div className="text-right">
           <h2 className="text-xl font-bold text-black uppercase tracking-wider">Ordem de Serviço</h2>
           <p className="font-mono text-2xl font-black mt-1 text-black">{currentOrderId}</p>
-          <p className="text-xs text-gray-600">Emissão: {new Date().toLocaleDateString('pt-BR')}</p>
+          <p className="text-xs text-gray-600">Emissão: {formatDateBR(new Date().toISOString())}</p>
         </div>
       </div>
 
@@ -45,8 +46,8 @@ export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => 
           <h3 className="font-bold text-sm mb-2 border-b border-gray-300 pb-1 text-black uppercase tracking-wider">Aparelho & Prazos</h3>
           <p className="text-sm text-black"><strong>Marca / Modelo:</strong> {orderData.brand} {orderData.model}</p>
           <p className="text-sm text-black"><strong>IMEI / Senha:</strong> {orderData.imeiPassword || 'Não informado'}</p>
-          <p className="text-sm text-black"><strong>Data Entrada:</strong> {orderData.entryDate ? new Date(orderData.entryDate).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR')}</p>
-          <p className="text-sm text-black"><strong>Prazo de Entrega:</strong> {orderData.deliveryDate ? new Date(orderData.deliveryDate).toLocaleDateString('pt-BR') : 'A combinar'}</p>
+          <p className="text-sm text-black"><strong>Data Entrada:</strong> {orderData.entryDate ? formatDateBR(orderData.entryDate) : formatDateBR(new Date().toISOString())}</p>
+          <p className="text-sm text-black"><strong>Prazo de Entrega:</strong> {orderData.deliveryDate ? formatDateBR(orderData.deliveryDate) : 'A combinar'}</p>
         </div>
       </div>
 

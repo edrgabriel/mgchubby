@@ -4,11 +4,16 @@ import { cn } from '../utils/cn';
 
 /**
  * Calcula os dias de garantia restantes a partir da data inicial e quantidade de dias.
+ * Fixado em T12:00:00 para evitar desvios de fuso horário (UTC vs Local).
  */
 export function calculateWarrantyInfo(startDateStr, days = 90) {
   if (!startDateStr) return { status: 'sem_garantia', remainingDays: 0, endDateFormatted: '' };
 
-  const startDate = new Date(startDateStr);
+  const cleanDateStr = (typeof startDateStr === 'string' && !startDateStr.includes('T'))
+    ? `${startDateStr}T12:00:00`
+    : startDateStr;
+
+  const startDate = new Date(cleanDateStr);
   if (isNaN(startDate.getTime())) return { status: 'sem_garantia', remainingDays: 0, endDateFormatted: '' };
 
   const endDate = new Date(startDate);
@@ -18,7 +23,10 @@ export function calculateWarrantyInfo(startDateStr, days = 90) {
   const diffTime = endDate.getTime() - now.getTime();
   const remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-  const endDateFormatted = endDate.toLocaleDateString('pt-BR');
+  const day = String(endDate.getDate()).padStart(2, '0');
+  const month = String(endDate.getMonth() + 1).padStart(2, '0');
+  const year = endDate.getFullYear();
+  const endDateFormatted = `${day}/${month}/${year}`;
 
   if (remainingDays > 7) {
     return { status: 'ativa', remainingDays, endDateFormatted };

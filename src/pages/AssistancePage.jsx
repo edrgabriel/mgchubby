@@ -10,6 +10,7 @@ import { PhotoUploader } from '../components/PhotoUploader';
 import { PixSettingsModal } from '../components/PixSettingsModal';
 import { saveOrder, getOrders, updateOrderStatus } from '../services/orderService';
 import { findCustomerByPhoneOrName, getCustomerProfile } from '../services/customerService';
+import { formatDateBR } from '../utils/dateUtils';
 import { cn } from '../utils/cn';
 
 export function AssistancePage() {
@@ -654,7 +655,7 @@ export function AssistancePage() {
                       
                       <div className="flex items-center gap-2 text-xs text-brand-light/60">
                         <Calendar size={14} />
-                        <span>Entrada: {order.entryDate ? new Date(order.entryDate).toLocaleDateString('pt-BR') : '—'}</span>
+                        <span>Entrada: {order.entryDate ? formatDateBR(order.entryDate) : '—'}</span>
                       </div>
                     </div>
 
