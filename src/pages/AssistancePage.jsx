@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Printer, Save, CheckCircle2, History, Plus, Search, MessageSquare, Calendar, ShieldCheck, PenTool, Camera, User, Smartphone, QrCode } from 'lucide-react';
+import { Printer, Save, CheckCircle2, History, Plus, Search, MessageSquare, Calendar, ShieldCheck, PenTool, Camera, User, Smartphone, QrCode, Link } from 'lucide-react';
 import { Input, Textarea } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { ServiceReceipt } from '../components/ServiceReceipt';
@@ -9,6 +9,7 @@ import { SignatureCanvas } from '../components/SignatureCanvas';
 import { PhotoUploader } from '../components/PhotoUploader';
 import { PixSettingsModal } from '../components/PixSettingsModal';
 import { saveOrder, getOrders, updateOrderStatus } from '../services/orderService';
+import { getShopSettings } from '../services/settingsService';
 import { findCustomerByPhoneOrName, getCustomerProfile } from '../services/customerService';
 import { formatDateBR } from '../utils/dateUtils';
 import { cn } from '../utils/cn';
@@ -215,6 +216,48 @@ export function AssistancePage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  /**
+   * Gera um link de assinatura remota para enviar ao cliente via WhatsApp.
+   * Os dados essenciais da OS são codificados em base64 na URL.
+   * O cliente abre no celular, assina, e envia a imagem de volta pelo WhatsApp.
+   */
+  const handleSendSignatureLink = async (order) => {
+    if (!order.whatsapp) {
+      alert("WhatsApp não informado para este cliente.");
+      return;
+    }
+
+    const shopSettings = await getShopSettings();
+
+    // Dados mínimos da OS codificados para o link remoto
+    const osData = {
+      orderId: order.orderId,
+      customerName: order.customerName,
+      brand: order.brand,
+      model: order.model,
+      problem: (order.problem || '').substring(0, 200),
+      entryDate: order.entryDate,
+      partsCost: order.partsCost,
+      laborCost: order.laborCost,
+      discount: order.discount,
+      warrantyDays: order.warrantyDays || 90,
+      shopPhone: shopSettings.shopPhone || ''
+    };
+
+    const encoded = btoa(JSON.stringify(osData));
+    const baseUrl = window.location.origin;
+    const signatureLink = `${baseUrl}/assinar?d=${encoded}`;
+
+    const cleanPhone = order.whatsapp.replace(/\D/g, '');
+    const phoneWithCountry = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+
+    const message = encodeURIComponent(
+      `Olá ${order.customerName}! 📝\n\nSegue o link para assinar digitalmente a Ordem de Serviço *${order.orderId}* (${order.brand} ${order.model}):\n\n${signatureLink}\n\n✅ Clique no link, revise os dados do serviço e assine com o dedo na tela.\n\nAtenciosamente,\n*MG SMART FIX*`
+    );
+
+    window.open(`https://wa.me/${phoneWithCountry}?text=${message}`, '_blank');
   };
 
   // Filtra histórico
@@ -697,9 +740,12 @@ export function AssistancePage() {
                         </select>
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         <Button type="button" variant="outline" size="sm" onClick={() => handleSendWhatsApp(order)} className="text-emerald-400 hover:text-emerald-300">
                           <MessageSquare size={14} className="mr-1" /> WhatsApp
+                        </Button>
+                        <Button type="button" variant="outline" size="sm" onClick={() => handleSendSignatureLink(order)} className="text-purple-400 hover:text-purple-300">
+                          <PenTool size={14} className="mr-1" /> Assinar
                         </Button>
                         <Button type="button" variant="outline" size="sm" onClick={() => handleOpenOrder(order)}>
                           Editar OS
