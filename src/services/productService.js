@@ -5,7 +5,8 @@ import bateriaImg from '../assets/products/bateria.png';
 import telaImg from '../assets/products/tela.png';
 import iphoneImg from '../assets/products/iphone.png';
 
-const STORAGE_KEY = '@MgChubby:products';
+const STORAGE_KEY = '@MgSmartFix:products';
+const OLD_STORAGE_KEY = '@MgChubby:products';
 
 const defaultProducts = [
   { id: 1, name: "Película de Vidro 3D", description: "Proteção máxima contra riscos e quedas.", category: "Acessórios", price: 25.0, image: peliculaImg, stock: 10 },
@@ -17,7 +18,7 @@ const defaultProducts = [
 ];
 
 const initializeProducts = () => {
-  const stored = localStorage.getItem(STORAGE_KEY);
+  const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(OLD_STORAGE_KEY);
   if (!stored) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultProducts));
     return defaultProducts;

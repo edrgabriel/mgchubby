@@ -9,7 +9,7 @@ export function CartPage() {
   const handleCheckout = () => {
     if (cart.length === 0) return;
     
-    let text = "*NOVO PEDIDO - MG CHUBBY*\n\n";
+    let text = "*NOVO PEDIDO - MG SMART FIX*\n\n";
     cart.forEach(item => {
       text += `${item.quantity}x ${item.name} - R$ ${(item.price * item.quantity).toFixed(2)}\n`;
     });

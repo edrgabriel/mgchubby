@@ -1,5 +1,5 @@
 export const getOrders = () => {
-  const orders = localStorage.getItem('mgchubby_orders');
+  const orders = localStorage.getItem('mgsmartfix_orders') || localStorage.getItem('mgchubby_orders');
   return orders ? JSON.parse(orders) : [];
 };
 
@@ -28,7 +28,7 @@ export const saveOrder = async (orderData) => {
     savedOrderId = newOrder.orderId;
   }
 
-  localStorage.setItem('mgchubby_orders', JSON.stringify(updatedOrders));
+  localStorage.setItem('mgsmartfix_orders', JSON.stringify(updatedOrders));
   
   return {
     success: true,

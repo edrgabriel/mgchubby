@@ -12,7 +12,7 @@ export function Header() {
       <div className="flex h-16 items-center justify-between px-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-2 text-brand-blue">
           <Smartphone size={28} />
-          <h1 className="text-xl font-bold text-white tracking-tight">MG<span className="text-brand-blue"> CHUBBY</span></h1>
+          <h1 className="text-xl font-bold text-white tracking-tight">MG<span className="text-brand-blue"> SMART FIX</span></h1>
         </div>
         
         {/* Desktop Navigation */}

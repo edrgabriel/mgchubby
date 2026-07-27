@@ -7,7 +7,7 @@ export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => 
     <div ref={ref} className="hidden print:block print-area font-sans text-black bg-white p-8">
       <div className="border-b-2 border-black pb-4 mb-6 flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-bold text-black">MG CHUBBY</h1>
+          <h1 className="text-3xl font-bold text-black">MG SMART FIX</h1>
           <p className="text-sm text-gray-600 mt-1">Assistência Técnica</p>
         </div>
         <div className="text-right">
@@ -76,7 +76,7 @@ export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => 
       <div className="mt-16 text-center text-sm text-black">
         <div className="w-64 border-t border-black mx-auto mb-2"></div>
         <p className="font-bold">Assinatura do Cliente</p>
-        <p className="mt-8 text-gray-500 text-xs">Garantia de 90 dias para serviços realizados. A MG CHUBBY não se responsabiliza por dados não salvos (faça backup).<br/>Impresso pelo sistema.</p>
+        <p className="mt-8 text-gray-500 text-xs">Garantia de 90 dias para serviços realizados. A MG SMART FIX não se responsabiliza por dados não salvos (faça backup).<br/>Impresso pelo sistema.</p>
       </div>
     </div>
   );
