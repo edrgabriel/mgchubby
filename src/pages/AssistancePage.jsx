@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Printer, Save, CheckCircle2, History, Plus, Search, MessageSquare, Calendar, ShieldCheck, PenTool, Camera, User, Smartphone } from 'lucide-react';
+import { Printer, Save, CheckCircle2, History, Plus, Search, MessageSquare, Calendar, ShieldCheck, PenTool, Camera, User, Smartphone, QrCode } from 'lucide-react';
 import { Input, Textarea } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { ServiceReceipt } from '../components/ServiceReceipt';
@@ -7,6 +7,7 @@ import { StatusBadge, PaymentStatusBadge } from '../components/StatusBadge';
 import { WarrantyBadge } from '../components/WarrantyBadge';
 import { SignatureCanvas } from '../components/SignatureCanvas';
 import { PhotoUploader } from '../components/PhotoUploader';
+import { PixSettingsModal } from '../components/PixSettingsModal';
 import { saveOrder, getOrders, updateOrderStatus } from '../services/orderService';
 import { findCustomerByPhoneOrName, getCustomerProfile } from '../services/customerService';
 import { cn } from '../utils/cn';
@@ -17,7 +18,8 @@ export function AssistancePage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [currentOrderId, setCurrentOrderId] = useState("");
   const [ordersHistory, setOrdersHistory] = useState([]);
-  
+  const [isPixModalOpen, setIsPixModalOpen] = useState(false);
+
   // Estados para busca & filtros no histórico
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -242,25 +244,31 @@ export function AssistancePage() {
           <p className="text-sm text-brand-light/60">Gestão operacional de reparos e garantias</p>
         </div>
 
-        <div className="flex bg-brand-gray rounded-lg p-1 border border-white/5">
-          <button
-            onClick={handleNewOrder}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
-              activeTab === 'new' ? "bg-brand-blue text-white" : "text-brand-light/60 hover:text-white"
-            )}
-          >
-            <Plus size={16} /> Nova OS
-          </button>
-          <button
-            onClick={() => setActiveTab('history')}
-            className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
-              activeTab === 'history' ? "bg-brand-blue text-white" : "text-brand-light/60 hover:text-white"
-            )}
-          >
-            <History size={16} /> Histórico ({ordersHistory.length})
-          </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={() => setIsPixModalOpen(true)}>
+            <QrCode size={16} className="mr-1 text-brand-blue" /> Configurar Pix
+          </Button>
+
+          <div className="flex bg-brand-gray rounded-lg p-1 border border-white/5">
+            <button
+              onClick={handleNewOrder}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                activeTab === 'new' ? "bg-brand-blue text-white" : "text-brand-light/60 hover:text-white"
+              )}
+            >
+              <Plus size={16} /> Nova OS
+            </button>
+            <button
+              onClick={() => setActiveTab('history')}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                activeTab === 'history' ? "bg-brand-blue text-white" : "text-brand-light/60 hover:text-white"
+              )}
+            >
+              <History size={16} /> Histórico ({ordersHistory.length})
+            </button>
+          </div>
         </div>
       </div>
 
@@ -469,9 +477,18 @@ export function AssistancePage() {
 
             {/* Bloco 4: Financeiro & Status */}
             <div className="bg-brand-gray border border-white/10 rounded-xl p-5 space-y-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <ShieldCheck className="text-brand-blue" size={20} /> 4. Valores & Status Operacional
-              </h3>
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <ShieldCheck className="text-brand-blue" size={20} /> 4. Valores & Status Operacional
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setIsPixModalOpen(true)}
+                  className="text-xs text-brand-blue hover:underline flex items-center gap-1"
+                >
+                  <QrCode size={14} /> Configurar Pix da Loja
+                </button>
+              </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Input
@@ -695,6 +712,12 @@ export function AssistancePage() {
           )}
         </div>
       )}
+
+      {/* Modal de Configuração do Pix */}
+      <PixSettingsModal
+        isOpen={isPixModalOpen}
+        onClose={() => setIsPixModalOpen(false)}
+      />
     </div>
   );
 }

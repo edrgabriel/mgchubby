@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getShopSettings } from '../services/settingsService';
 
 export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => {
+  const [shopSettings, setShopSettings] = useState({ pixKey: '', pixQrCode: '' });
+
+  useEffect(() => {
+    getShopSettings().then(res => setShopSettings(res));
+  }, []);
+
   if (!orderData) return null;
 
   const parts = Number(orderData.partsCost) || 0;
@@ -73,6 +80,21 @@ export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => 
           <p className="text-gray-600 text-[11px] leading-tight">
             * A garantia não cobre danos por quedas, contato com líquidos ou intervenção de terceiros.
           </p>
+
+          {/* Dados de Pagamento Pix no Recibo */}
+          {(shopSettings.pixKey || shopSettings.pixQrCode) && (
+            <div className="mt-3 pt-2 border-t border-gray-300 flex items-center gap-3">
+              {shopSettings.pixQrCode && (
+                <img src={shopSettings.pixQrCode} alt="QR Code Pix" className="w-16 h-16 object-contain border border-black p-0.5 rounded" />
+              )}
+              <div>
+                <p className="font-bold text-xs text-black uppercase">Pagamento via Pix</p>
+                {shopSettings.pixKey && (
+                  <p className="text-[11px] text-gray-800 font-mono select-all">Chave: <strong>{shopSettings.pixKey}</strong></p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="w-1/2 border border-gray-300 rounded p-3">

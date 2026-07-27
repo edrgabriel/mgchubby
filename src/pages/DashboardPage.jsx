@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, Wrench, TrendingUp, Database, Award } from 'lucide-react';
+import { DollarSign, Wrench, TrendingUp, Database, Award, QrCode } from 'lucide-react';
 import { getOrders } from '../services/orderService';
 import { getCustomers } from '../services/customerService';
 import { getLastBackupDate } from '../services/backupService';
 import { BackupModal } from '../components/BackupModal';
+import { PixSettingsModal } from '../components/PixSettingsModal';
 import { StatusBadge } from '../components/StatusBadge';
 import { Button } from '../components/ui/Button';
 
@@ -12,6 +13,7 @@ export function DashboardPage() {
   const [customers, setCustomers] = useState([]);
   const [lastBackup, setLastBackup] = useState(null);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+  const [isPixModalOpen, setIsPixModalOpen] = useState(false);
   const [period, setPeriod] = useState('month'); // 'month' | 'all'
 
   const loadData = async () => {
@@ -88,7 +90,7 @@ export function DashboardPage() {
           <p className="text-sm text-brand-light/60">Indicadores financeiros e operacionais da assistência</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex bg-brand-gray rounded-lg p-1 border border-white/5 text-xs">
             <button
               onClick={() => setPeriod('month')}
@@ -107,6 +109,10 @@ export function DashboardPage() {
               Todo o Período
             </button>
           </div>
+
+          <Button onClick={() => setIsPixModalOpen(true)} variant="outline" size="sm">
+            <QrCode size={16} className="mr-1.5 text-brand-blue" /> Configurar Pix
+          </Button>
 
           <Button onClick={() => setIsBackupModalOpen(true)} variant="outline" size="sm">
             <Database size={16} className="mr-1.5 text-brand-blue" /> Backup (.JSON)
@@ -233,6 +239,12 @@ export function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Modal de Configuração do Pix */}
+      <PixSettingsModal
+        isOpen={isPixModalOpen}
+        onClose={() => setIsPixModalOpen(false)}
+      />
 
       {/* Modal de Backup */}
       <BackupModal
