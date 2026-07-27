@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Wrench, ShoppingBag, ShoppingCart } from 'lucide-react';
+import { Wrench, ShoppingBag, ShoppingCart, LayoutDashboard } from 'lucide-react';
 import { useCart } from '../../contexts/CartContext';
 import { cn } from '../../utils/cn';
 
@@ -9,12 +9,13 @@ export function BottomNav() {
   
   const navItems = [
     { to: "/", icon: Wrench, label: "Assistência" },
+    { to: "/dashboard", icon: LayoutDashboard, label: "Gestão" },
     { to: "/store", icon: ShoppingBag, label: "Loja" },
     { to: "/cart", icon: ShoppingCart, label: "Carrinho", badge: itemsCount > 0 ? itemsCount : null },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-brand-gray/90 backdrop-blur-md border-t border-white/5 sm:hidden print-hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-brand-gray/90 backdrop-blur-md border-t border-white/5 sm:hidden print:hidden">
       <div className="flex h-16 items-center justify-around px-2">
         {navItems.map((item) => (
           <NavLink

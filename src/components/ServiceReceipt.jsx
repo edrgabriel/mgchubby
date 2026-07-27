@@ -3,82 +3,120 @@ import React from 'react';
 export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => {
   if (!orderData) return null;
 
+  const parts = Number(orderData.partsCost) || 0;
+  const labor = Number(orderData.laborCost) || 0;
+  const discount = Number(orderData.discount) || 0;
+  const total = parts + labor - discount;
+
+  const currentOrderId = orderId || orderData.orderId || 'OS-0000';
+
   return (
     <div ref={ref} className="hidden print:block print-area font-sans text-black bg-white p-8">
       <div className="border-b-2 border-black pb-4 mb-6 flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-bold text-black">MG SMART FIX</h1>
-          <p className="text-sm text-gray-600 mt-1">Assistência Técnica</p>
+          <h1 className="text-3xl font-bold text-black tracking-tight">MG SMART FIX</h1>
+          <p className="text-sm text-gray-700 mt-0.5">Assistência Técnica Especializada</p>
+          {orderData.whatsapp && (
+            <p className="text-xs text-gray-600">WhatsApp: {orderData.whatsapp}</p>
+          )}
         </div>
         <div className="text-right">
-          <h2 className="text-xl font-bold text-black">Ordem de Serviço</h2>
-          <p className="font-mono text-lg font-bold mt-1 text-black">{orderId}</p>
-          <p className="text-sm text-gray-600">{new Date().toLocaleDateString('pt-BR')}</p>
+          <h2 className="text-xl font-bold text-black uppercase tracking-wider">Ordem de Serviço</h2>
+          <p className="font-mono text-2xl font-black mt-1 text-black">{currentOrderId}</p>
+          <p className="text-xs text-gray-600">Emissão: {new Date().toLocaleDateString('pt-BR')}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-8 mb-8">
-        <div>
-          <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1 text-black">Dados do Cliente</h3>
-          <p className="text-black"><strong>Nome:</strong> {orderData.customerName}</p>
-          <p className="text-black"><strong>WhatsApp:</strong> {orderData.whatsapp}</p>
+      <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="border border-gray-300 rounded p-3">
+          <h3 className="font-bold text-sm mb-2 border-b border-gray-300 pb-1 text-black uppercase tracking-wider">Dados do Cliente</h3>
+          <p className="text-sm text-black"><strong>Nome:</strong> {orderData.customerName || 'Não informado'}</p>
+          <p className="text-sm text-black"><strong>WhatsApp:</strong> {orderData.whatsapp || 'Não informado'}</p>
         </div>
-        <div>
-          <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1 text-black">Aparelho & Prazos</h3>
-          <p className="text-black"><strong>Marca/Modelo:</strong> {orderData.brand} / {orderData.model}</p>
-          <p className="text-black"><strong>IMEI/Senha:</strong> {orderData.imeiPassword || 'Não informado'}</p>
-          <p className="text-black"><strong>Entrada:</strong> {orderData.entryDate ? new Date(orderData.entryDate).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR')}</p>
-          <p className="text-black"><strong>Entrega Prevista:</strong> {orderData.deliveryDate ? new Date(orderData.deliveryDate).toLocaleDateString('pt-BR') : 'Não informada'}</p>
+
+        <div className="border border-gray-300 rounded p-3">
+          <h3 className="font-bold text-sm mb-2 border-b border-gray-300 pb-1 text-black uppercase tracking-wider">Aparelho & Prazos</h3>
+          <p className="text-sm text-black"><strong>Marca / Modelo:</strong> {orderData.brand} {orderData.model}</p>
+          <p className="text-sm text-black"><strong>IMEI / Senha:</strong> {orderData.imeiPassword || 'Não informado'}</p>
+          <p className="text-sm text-black"><strong>Data Entrada:</strong> {orderData.entryDate ? new Date(orderData.entryDate).toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR')}</p>
+          <p className="text-sm text-black"><strong>Prazo de Entrega:</strong> {orderData.deliveryDate ? new Date(orderData.deliveryDate).toLocaleDateString('pt-BR') : 'A combinar'}</p>
         </div>
       </div>
 
-      <div className="mb-8">
-        <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1 text-black">Relato do Problema</h3>
-        <p className="whitespace-pre-wrap min-h-[60px] text-black border border-gray-200 p-2 rounded">{orderData.problem}</p>
+      <div className="mb-6 border border-gray-300 rounded p-3">
+        <h3 className="font-bold text-sm mb-1 text-black uppercase tracking-wider">Defeito Declarado / Relato do Cliente</h3>
+        <p className="whitespace-pre-wrap text-sm text-black min-h-[45px]">{orderData.problem || 'Nenhum relato registrado.'}</p>
       </div>
 
-      <div className="mb-8">
-        <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1 text-black">Checklist de Entrada</h3>
-        <div className="grid grid-cols-3 gap-3 text-sm">
-          {Object.entries(orderData.checklist).map(([key, value]) => (
-            <div key={key} className="flex items-center gap-2 text-black">
-              <div className={`w-4 h-4 border border-black flex items-center justify-center ${value ? 'bg-black' : 'bg-white'}`}>
-                {value && <span className="text-white text-xs">✓</span>}
+      {orderData.checklist && (
+        <div className="mb-6 border border-gray-300 rounded p-3">
+          <h3 className="font-bold text-sm mb-2 border-b border-gray-300 pb-1 text-black uppercase tracking-wider">Checklist de Entrada</h3>
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            {Object.entries(orderData.checklist).map(([key, value]) => (
+              <div key={key} className="flex items-center gap-2 text-black">
+                <div className={`w-3.5 h-3.5 border border-black flex items-center justify-center ${value ? 'bg-black text-white' : 'bg-white'}`}>
+                  {value && <span className="text-[10px] font-bold">✓</span>}
+                </div>
+                <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
               </div>
-              <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="flex justify-between items-start mb-6 gap-6">
+        <div className="w-1/2 border border-gray-300 rounded p-3 text-xs space-y-1">
+          <h3 className="font-bold text-sm mb-1 text-black uppercase tracking-wider">Termo de Garantia</h3>
+          <p className="text-gray-800 leading-tight">
+            Garantia legal de <strong className="text-black">{orderData.warrantyDays || 90} dias</strong> para os serviços realizados e peças substituídas a partir da data de entrega.
+          </p>
+          <p className="text-gray-600 text-[11px] leading-tight">
+            * A garantia não cobre danos por quedas, contato com líquidos ou intervenção de terceiros.
+          </p>
+        </div>
+
+        <div className="w-1/2 border border-gray-300 rounded p-3">
+          <h3 className="font-bold text-sm mb-2 border-b border-gray-300 pb-1 text-black uppercase tracking-wider">Resumo Financeiro</h3>
+          <div className="flex justify-between text-xs mb-1 text-black">
+            <span>Valor Peças / Material:</span>
+            <span>R$ {parts.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between text-xs mb-1 text-black">
+            <span>Mão de Obra:</span>
+            <span>R$ {labor.toFixed(2)}</span>
+          </div>
+          {discount > 0 && (
+            <div className="flex justify-between text-xs mb-1 text-red-600 font-medium">
+              <span>Desconto:</span>
+              <span>- R$ {discount.toFixed(2)}</span>
             </div>
-          ))}
+          )}
+          <div className="flex justify-between mt-2 pt-2 border-t border-black font-bold text-base text-black">
+            <span>TOTAL:</span>
+            <span>R$ {total.toFixed(2)}</span>
+          </div>
+          <div className="mt-2 text-right text-xs">
+            <span className="font-semibold text-black">Pagamento: </span>
+            <span className="uppercase text-gray-800">{orderData.paymentStatus || 'Pendente'} ({orderData.paymentMethod || 'Pix'})</span>
+          </div>
         </div>
       </div>
 
-      <div className="mb-8 w-1/2 ml-auto">
-        <h3 className="font-bold text-lg mb-2 border-b border-gray-300 pb-1 text-black">Resumo Financeiro</h3>
-        <div className="flex justify-between mb-1 text-black">
-          <span>Peças:</span>
-          <span>R$ {Number(orderData.partsCost).toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between mb-1 text-black">
-          <span>Mão de Obra:</span>
-          <span>R$ {Number(orderData.laborCost).toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between mb-1 text-black">
-          <span>Desconto:</span>
-          <span>- R$ {Number(orderData.discount).toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between mt-2 pt-2 border-t border-gray-300 font-bold text-lg text-black">
-          <span>TOTAL:</span>
-          <span>
-            R$ {(Number(orderData.partsCost) + Number(orderData.laborCost) - Number(orderData.discount)).toFixed(2)}
-          </span>
-        </div>
-      </div>
-
-      <div className="mt-16 text-center text-sm text-black">
-        <div className="w-64 border-t border-black mx-auto mb-2"></div>
-        <p className="font-bold">Assinatura do Cliente</p>
-        <p className="mt-8 text-gray-500 text-xs">Garantia de 90 dias para serviços realizados. A MG SMART FIX não se responsabiliza por dados não salvos (faça backup).<br/>Impresso pelo sistema.</p>
+      {/* Assinatura do Cliente */}
+      <div className="mt-12 text-center text-xs text-black flex flex-col items-center justify-center">
+        {orderData.customerSignatureEntry ? (
+          <div className="mb-2">
+            <img src={orderData.customerSignatureEntry} alt="Assinatura Cliente" className="h-16 object-contain mx-auto" />
+            <div className="w-64 border-t border-black mx-auto mt-1"></div>
+          </div>
+        ) : (
+          <div className="w-64 border-t border-black mx-auto mb-2 pt-8"></div>
+        )}
+        <p className="font-bold uppercase tracking-wider text-sm">{orderData.customerName || 'Cliente'}</p>
+        <p className="text-gray-500 text-[10px] mt-1">Assinatura Digital / Declaração de ciência dos termos de serviço</p>
       </div>
     </div>
   );
 });
+
 ServiceReceipt.displayName = "ServiceReceipt";
