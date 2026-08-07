@@ -122,6 +122,43 @@ export const ServiceReceipt = React.forwardRef(({ orderData, orderId }, ref) => 
             <span className="font-semibold text-black">Pagamento: </span>
             <span className="uppercase text-gray-800">{orderData.paymentStatus || 'Pendente'} ({orderData.paymentMethod || 'Pix'})</span>
           </div>
+
+          {/* Detalhamento do Parcelamento */}
+          {orderData.paymentStatus === 'parcelado' && Number(orderData.installments) > 1 && (() => {
+            const numInstallments = Number(orderData.installments);
+            const installmentValue = total / numInstallments;
+            return (
+              <div className="mt-3 pt-2 border-t border-gray-300">
+                <p className="font-bold text-xs text-black uppercase mb-1">Parcelamento: {numInstallments}x de R$ {installmentValue.toFixed(2)}</p>
+                <table className="w-full text-[11px] text-black">
+                  <thead>
+                    <tr className="border-b border-gray-300">
+                      <th className="text-left py-0.5 font-semibold">Parcela</th>
+                      <th className="text-center py-0.5 font-semibold">Vencimento</th>
+                      <th className="text-right py-0.5 font-semibold">Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.from({ length: numInstallments }, (_, i) => {
+                      let dueDate = '—';
+                      if (orderData.installmentFirstDue) {
+                        const base = new Date(orderData.installmentFirstDue + 'T12:00:00');
+                        base.setMonth(base.getMonth() + i);
+                        dueDate = formatDateBR(base.toISOString());
+                      }
+                      return (
+                        <tr key={i} className="border-b border-gray-200 last:border-0">
+                          <td className="py-0.5">{i + 1}/{numInstallments}</td>
+                          <td className="py-0.5 text-center">{dueDate}</td>
+                          <td className="py-0.5 text-right font-medium">R$ {installmentValue.toFixed(2)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })()}
         </div>
       </div>
 

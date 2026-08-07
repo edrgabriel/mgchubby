@@ -43,6 +43,8 @@ export function AssistancePage() {
     status: 'recebido',
     paymentStatus: 'pendente',
     paymentMethod: 'pix',
+    installments: 2,
+    installmentFirstDue: '',
     warrantyDays: 90,
     warrantyStartDate: new Date().toISOString().split('T')[0],
     entryDate: new Date().toISOString().split('T')[0],
@@ -137,6 +139,8 @@ export function AssistancePage() {
       status: order.status || 'recebido',
       paymentStatus: order.paymentStatus || 'pendente',
       paymentMethod: order.paymentMethod || 'pix',
+      installments: order.installments || 2,
+      installmentFirstDue: order.installmentFirstDue || '',
       warrantyDays: order.warrantyDays || 90,
       warrantyStartDate: order.warrantyStartDate || order.entryDate || '',
       entryDate: order.entryDate || '',
@@ -610,9 +614,68 @@ export function AssistancePage() {
                 </div>
               </div>
 
+              {/* Seção de Parcelamento - aparece quando status é 'parcelado' */}
+              {formData.paymentStatus === 'parcelado' && (
+                <div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-lg space-y-3">
+                  <p className="text-sm font-bold text-purple-300 uppercase tracking-wider flex items-center gap-2">
+                    💳 Configuração do Parcelamento
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-brand-light/90 mb-1">Número de Parcelas</label>
+                      <select
+                        name="installments"
+                        value={formData.installments}
+                        onChange={handleInputChange}
+                        className="w-full bg-brand-dark border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-purple-400 text-sm font-semibold"
+                      >
+                        {[2,3,4,5,6,7,8,9,10,11,12].map(n => (
+                          <option key={n} value={n}>{n}x de R$ {(total / n).toFixed(2)}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <Input
+                      label="Vencimento da 1ª Parcela"
+                      type="date"
+                      name="installmentFirstDue"
+                      value={formData.installmentFirstDue}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  {/* Preview das parcelas */}
+                  <div className="mt-2 space-y-1 max-h-40 overflow-y-auto pr-1">
+                    {Array.from({ length: Number(formData.installments) || 2 }, (_, i) => {
+                      const installmentValue = total / (Number(formData.installments) || 2);
+                      let dueDate = '';
+                      if (formData.installmentFirstDue) {
+                        const base = new Date(formData.installmentFirstDue + 'T12:00:00');
+                        base.setMonth(base.getMonth() + i);
+                        dueDate = formatDateBR(base.toISOString());
+                      }
+                      return (
+                        <div key={i} className="flex justify-between items-center text-xs bg-white/5 rounded px-3 py-1.5">
+                          <span className="text-brand-light/80">
+                            Parcela {i + 1}/{formData.installments}
+                            {dueDate && <span className="text-brand-light/50 ml-2">— Vence: {dueDate}</span>}
+                          </span>
+                          <span className="font-bold text-purple-300">R$ {installmentValue.toFixed(2)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div className="p-4 bg-white/5 border border-white/10 rounded-lg flex justify-between items-center">
                 <span className="text-sm font-bold text-white uppercase tracking-wider">TOTAL DO SERVIÇO:</span>
-                <span className="text-2xl font-black text-emerald-400">R$ {total.toFixed(2)}</span>
+                <div className="text-right">
+                  <span className="text-2xl font-black text-emerald-400">R$ {total.toFixed(2)}</span>
+                  {formData.paymentStatus === 'parcelado' && (
+                    <p className="text-xs text-purple-300 font-semibold mt-0.5">
+                      em {formData.installments}x de R$ {(total / (Number(formData.installments) || 2)).toFixed(2)}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 
